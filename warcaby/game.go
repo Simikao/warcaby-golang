@@ -122,16 +122,43 @@ func (g *Game) Move(fromX, fromY, toX, toY int) error {
 		if piece == Black && dx != 1 {
 			return errors.New("czarne pionki mogą poruszać się tylko w dół")
 		}
+		if g.Board[toX][toY] != Empty {
+			return errors.New("docelowe pole nie jest puste")
+		}
+
+		g.Board[toX][toY] = piece
+		g.Board[fromX][fromY] = Empty
+
+	} else if abs(dx) == 2 {
+		if piece == White && dx != -2 {
+			return errors.New("białe pionki mogą bić tylko do góry")
+		}
+		if piece == Black && dx != 2 {
+			return errors.New("czarne pionki mogą bić tylko w dół")
+		}
+
+		midX := fromX + dx/2
+		midY := fromY + dy/2
+
+		opponent := Black
+		if piece == Black {
+			opponent = White
+		}
+
+		if g.Board[midX][midY] != opponent {
+			return errors.New("brak pionka przeciwnika do zbicia")
+		}
+
+		if g.Board[toX][toY] != Empty {
+			return errors.New("docelowe pole nie jest puste")
+		}
+
+		g.Board[toX][toY] = piece
+		g.Board[fromX][fromY] = Empty
+		g.Board[midX][midY] = Empty
 	} else {
 		return errors.New("nieprawidłowy ruch: ruch musi być o jedno pole")
 	}
-
-	if g.Board[toX][toY] != Empty {
-		return errors.New("docelowe pole nie jest puste")
-	}
-
-	g.Board[toX][toY] = piece
-	g.Board[fromX][fromY] = Empty
 
 	if g.CurrentPlayer == White {
 		g.CurrentPlayer = Black
