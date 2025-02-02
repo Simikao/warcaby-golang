@@ -72,6 +72,18 @@ func (g *Game) PrintBoard() {
 		}
 		fmt.Println()
 	}
+	fmt.Println("Ruch gracza:", pieceToString(g.CurrentPlayer))
+}
+
+func pieceToString(p Piece) string {
+	switch p {
+	case Black:
+		return "Czarne"
+	case White:
+		return "Białe"
+	default:
+		return "Brak"
+	}
 }
 
 func abs(x int) int {
