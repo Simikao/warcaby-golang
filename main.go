@@ -1,7 +1,11 @@
 package main
 
-import "fmt"
+import (
+	game "warcaby/warcaby"
+)
 
 func main() {
-	fmt.Println("Hello world, once again")
+	g := game.NewGame(1)
+
+	g.PrintBoard()
 }
