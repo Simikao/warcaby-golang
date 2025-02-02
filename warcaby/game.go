@@ -46,7 +46,15 @@ func NewGame(id int) *Game {
 }
 
 func (g *Game) PrintBoard() {
+	fmt.Print("  ")
+	for j := 0; j < BoardSize; j++ {
+		fmt.Printf("%d ", j)
+	}
+	fmt.Println()
+
 	for i := 0; i < BoardSize; i++ {
+		fmt.Printf("%d ", i)
+
 		for j := 0; j < BoardSize; j++ {
 			var ch string
 			switch g.Board[i][j] {
