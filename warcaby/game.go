@@ -72,7 +72,11 @@ func (g *Game) PrintBoard() {
 		}
 		fmt.Println()
 	}
-	fmt.Println("Ruch gracza:", pieceToString(g.CurrentPlayer))
+	if g.Winner != Empty {
+		fmt.Println("Koniec gry! Zwyciężyły", pieceToString(g.Winner))
+	} else {
+		fmt.Println("Ruch gracza:", pieceToString(g.CurrentPlayer))
+	}
 }
 
 func pieceToString(p Piece) string {
@@ -160,6 +164,8 @@ func (g *Game) Move(fromX, fromY, toX, toY int) error {
 		return errors.New("nieprawidłowy ruch: ruch musi być o jedno pole")
 	}
 
+	g.checkWinner()
+
 	if g.CurrentPlayer == White {
 		g.CurrentPlayer = Black
 	} else {
@@ -167,4 +173,22 @@ func (g *Game) Move(fromX, fromY, toX, toY int) error {
 	}
 
 	return nil
+}
+
+func (g *Game) checkWinner() {
+	whiteCount, blackCount := 0, 0
+	for i := 0; i < BoardSize; i++ {
+		for j := 0; j < BoardSize; j++ {
+			if g.Board[i][j] == White {
+				whiteCount++
+			} else if g.Board[i][j] == Black {
+				blackCount++
+			}
+		}
+	}
+	if whiteCount == 0 {
+		g.Winner = Black
+	} else if blackCount == 0 {
+		g.Winner = White
+	}
 }
