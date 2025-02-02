@@ -1,6 +1,9 @@
 package game
 
-import "fmt"
+import (
+	"errors"
+	"fmt"
+)
 
 const BoardSize = 8
 
@@ -69,4 +72,60 @@ func (g *Game) PrintBoard() {
 		}
 		fmt.Println()
 	}
+}
+
+func abs(x int) int {
+	if x < 0 {
+		return -x
+	}
+	return x
+}
+
+func (g *Game) Move(fromX, fromY, toX, toY int) error {
+	if fromX < 0 || fromX >= BoardSize || fromY < 0 || fromY >= BoardSize ||
+		toX < 0 || toX >= BoardSize || toY < 0 || toY >= BoardSize {
+		return errors.New("współrzędne poza zakresem planszy")
+	}
+
+	piece := g.Board[fromX][fromY]
+	if piece == Empty {
+		return errors.New("na wskazanej pozycji nie ma pionka")
+	}
+
+	if piece != g.CurrentPlayer {
+		return errors.New("nie możesz poruszać pionkiem przeciwnika")
+	}
+
+	dx := toX - fromX
+	dy := toY - fromY
+
+	if abs(dx) != abs(dy) {
+		return errors.New("ruch musi być po przekątnej")
+	}
+
+	if abs(dx) == 1 {
+		if piece == White && dx != -1 {
+			return errors.New("białe pionki mogą poruszać się tylko do góry")
+		}
+		if piece == Black && dx != 1 {
+			return errors.New("czarne pionki mogą poruszać się tylko w dół")
+		}
+	} else {
+		return errors.New("nieprawidłowy ruch: ruch musi być o jedno pole")
+	}
+
+	if g.Board[toX][toY] != Empty {
+		return errors.New("docelowe pole nie jest puste")
+	}
+
+	g.Board[toX][toY] = piece
+	g.Board[fromX][fromY] = Empty
+
+	if g.CurrentPlayer == White {
+		g.CurrentPlayer = Black
+	} else {
+		g.CurrentPlayer = White
+	}
+
+	return nil
 }
