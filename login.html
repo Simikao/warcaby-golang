@@ -2,7 +2,7 @@
 <html lang="pl">
   <head>
     <meta charset="UTF-8" />
-    <title>Logowanie - Warcaby</title>
+    <title>Logowanie i Rejestracja - Warcaby</title>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <style>
       body {
@@ -11,28 +11,65 @@
       }
       form {
         max-width: 300px;
-        margin: 0 auto;
+        margin: 20px auto;
+        border: 1px solid #ccc;
+        padding: 15px;
+        border-radius: 5px;
       }
-      input {
+      input,
+      textarea {
         display: block;
         margin-bottom: 10px;
         width: 100%;
         padding: 8px;
+        box-sizing: border-box;
       }
       button {
         padding: 8px 16px;
       }
+      .hidden {
+        display: none;
+      }
+      #toggleButtons {
+        text-align: center;
+      }
+      #toggleButtons button {
+        margin: 0 5px;
+      }
     </style>
   </head>
   <body>
-    <h1>Logowanie</h1>
+    <h1>Logowanie i Rejestracja</h1>
+
+    <div id="toggleButtons">
+      <button id="showLogin">Logowanie</button>
+      <button id="showRegister">Rejestracja</button>
+    </div>
+
     <form id="loginForm">
       <input type="email" id="email" placeholder="Email" required />
       <input type="password" id="password" placeholder="Hasło" required />
       <button type="submit">Zaloguj się</button>
     </form>
 
+    <form id="registerForm" class="hidden">
+      <input type="text" id="nick" placeholder="Nick" required />
+      <input type="email" id="regEmail" placeholder="Email" required />
+      <textarea id="bio" placeholder="Bio (opcjonalnie)"></textarea>
+      <input type="password" id="regPassword" placeholder="Hasło" required />
+      <button type="submit">Zarejestruj się</button>
+    </form>
+
     <script>
+      $("#showLogin").click(function () {
+        $("#loginForm").removeClass("hidden");
+        $("#registerForm").addClass("hidden");
+      });
+      $("#showRegister").click(function () {
+        $("#registerForm").removeClass("hidden");
+        $("#loginForm").addClass("hidden");
+      });
+
       $("#loginForm").submit(function (e) {
         e.preventDefault();
         const email = $("#email").val();
@@ -55,6 +92,34 @@
           },
           error: function (err) {
             alert("Błąd logowania: " + err.responseText);
+          },
+        });
+      });
+
+      $("#registerForm").submit(function (e) {
+        e.preventDefault();
+        const nick = $("#nick").val();
+        const email = $("#regEmail").val();
+        const bio = $("#bio").val();
+        const password = $("#regPassword").val();
+
+        $.ajax({
+          url: "/register",
+          method: "POST",
+          contentType: "application/json",
+          data: JSON.stringify({
+            nick: nick,
+            email: email,
+            bio: bio,
+            password: password,
+          }),
+          success: function (response) {
+            alert("Rejestracja udana! Teraz zaloguj się.");
+            $("#registerForm").addClass("hidden");
+            $("#loginForm").removeClass("hidden");
+          },
+          error: function (err) {
+            alert("Błąd rejestracji: " + err.responseText);
           },
         });
       });
