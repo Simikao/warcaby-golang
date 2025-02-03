@@ -27,10 +27,10 @@ func CreateGame(c *gin.Context) {
 	userID := userIDVal.(int)
 
 	gamesMu.Lock()
+	defer gamesMu.Unlock()
 	newGame := game.NewGame(nextID, userID)
 	games[nextID] = newGame
 	nextID++
-	gamesMu.Unlock()
 
 	c.JSON(http.StatusOK, newGame)
 }
@@ -139,6 +139,7 @@ func DeleteGame(c *gin.Context) {
 	}
 
 	gamesMu.Lock()
+	defer gamesMu.Unlock()
 	_, ok := games[id]
 	if !ok {
 		gamesMu.Unlock()
@@ -146,7 +147,6 @@ func DeleteGame(c *gin.Context) {
 		return
 	}
 	delete(games, id)
-	gamesMu.Unlock()
 	c.JSON(http.StatusOK, gin.H{"message": "Gra usunięta"})
 }
 
