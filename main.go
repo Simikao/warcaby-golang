@@ -25,9 +25,16 @@ func main() {
 		authorized.POST("/games/:id/invite", gHandler.InviteUser)
 		authorized.PUT("/games/:id/move", gHandler.MoveGame)
 		authorized.DELETE("/games/:id", gHandler.DeleteGame)
+
+		authorized.GET("/users/me", uHandler.GetMyUser)
+		authorized.PUT("/users/:id", uHandler.UpdateUser)
+		authorized.DELETE("/users/:id", uHandler.DeleteUser)
 	}
 
 	r.GET("/games/:id", gHandler.GetGame)
+
+	r.GET("/users/:id", uHandler.GetUser)
+	r.GET("/users", uHandler.SearchUsers)
 
 	r.POST("/register", uHandler.RegisterUser)
 	r.POST("/login", uHandler.Login)
