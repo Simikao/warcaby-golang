@@ -1,4 +1,4 @@
-package main
+package user_hanler
 
 import (
 	"net/http"
@@ -8,7 +8,7 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
-func registerUser(c *gin.Context) {
+func RegisterUser(c *gin.Context) {
 	var newUser db.User
 	if err := c.ShouldBindJSON(&newUser); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Błąd dekodowania JSON"})
@@ -35,7 +35,7 @@ func registerUser(c *gin.Context) {
 	c.JSON(http.StatusOK, newUser)
 }
 
-func login(c *gin.Context) {
+func Login(c *gin.Context) {
 	var credentials struct {
 		Email    string `json:"email"`
 		Password string `json:"password"`
