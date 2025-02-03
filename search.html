@@ -7,18 +7,54 @@
     <style>
       body {
         font-family: Arial, sans-serif;
-        margin: 20px;
+        background-color: #f7f7f7;
+        margin: 0;
+        padding: 10px;
+        color: #333;
+      }
+      .container {
+        max-width: 800px;
+        margin: 20px auto;
+        padding: 20px;
+        background-color: #fff;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      }
+      h1 {
+        text-align: center;
+        margin-bottom: 20px;
+      }
+      .navbar {
+        text-align: center;
+        margin-bottom: 20px;
+      }
+      .navbar button {
+        margin: 0 5px;
+        padding: 8px 16px;
+        background-color: #007bff;
+        border: none;
+        color: #fff;
+        border-radius: 4px;
+        cursor: pointer;
+      }
+      .navbar button:hover {
+        background-color: #0056b3;
       }
       #searchContainer {
         max-width: 400px;
-        margin: 0 auto;
+        margin: 0 auto 20px;
+        text-align: center;
       }
-      input[type="text"] {
-        width: 80%;
+      #searchContainer input[type="text"] {
+        width: 70%;
         padding: 8px;
         margin-right: 5px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        box-sizing: border-box;
       }
-      button {
+      #searchContainer button {
         padding: 8px 12px;
       }
       #results {
@@ -27,20 +63,30 @@
       .user {
         border-bottom: 1px solid #ccc;
         padding: 5px 0;
+        font-size: 0.95em;
       }
     </style>
   </head>
   <body>
-    <h1>Wyszukiwanie użytkowników</h1>
-    <div id="searchContainer">
-      <input
-        type="text"
-        id="searchInput"
-        placeholder="Wpisz fragment nicka..."
-      />
-      <button id="searchBtn">Szukaj</button>
+    <div class="container">
+      <div class="navbar">
+        <button onclick="window.location.href='/game'">Powrót do Gry</button>
+        <button onclick="window.location.href='/profile'">Mój Profil</button>
+        <button onclick="window.location.href='/logout'">Wyloguj się</button>
+      </div>
+
+      <h1>Wyszukiwanie użytkowników</h1>
+
+      <div id="searchContainer">
+        <input
+          type="text"
+          id="searchInput"
+          placeholder="Wpisz fragment nicka..."
+        />
+        <button id="searchBtn">Szukaj</button>
+      </div>
+      <div id="results"></div>
     </div>
-    <div id="results"></div>
 
     <script>
       $("#searchBtn").click(function () {
@@ -73,7 +119,7 @@
           const userHtml = `<div class="user">
                               <strong>ID:</strong> ${user.ID} <br>
                               <strong>Nick:</strong> ${user.Nick} <br>
-                              <strong>Bio:</strong> ${user.Bio ? user.Bio : "Brak"} 
+                              <strong>Bio:</strong> ${user.Bio ? user.Bio : "Brak"}
                             </div>`;
           $results.append(userHtml);
         });

@@ -5,12 +5,70 @@
     <title>Warcaby - Gra</title>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <style>
+      body {
+        font-family: Arial, sans-serif;
+        background-color: #f7f7f7;
+        margin: 0;
+        padding: 0;
+        color: #333;
+      }
+      .container {
+        max-width: 800px;
+        margin: 30px auto;
+        padding: 20px;
+        background-color: #fff;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      }
+      h1,
+      h3 {
+        text-align: center;
+        margin-bottom: 20px;
+      }
+      .section {
+        margin-bottom: 20px;
+      }
+      label {
+        display: block;
+        margin-bottom: 5px;
+        font-weight: bold;
+      }
+      input[type="number"],
+      input[type="text"],
+      input[type="email"],
+      input[type="password"] {
+        width: 100%;
+        padding: 8px;
+        margin-bottom: 10px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        box-sizing: border-box;
+      }
+      button {
+        padding: 8px 16px;
+        background-color: #007bff;
+        border: none;
+        color: #fff;
+        border-radius: 4px;
+        cursor: pointer;
+      }
+      button:hover {
+        background-color: #0056b3;
+      }
+      .navbar {
+        text-align: center;
+        margin-bottom: 20px;
+      }
+      .navbar button {
+        margin: 0 10px;
+      }
       table {
         border-collapse: collapse;
-        margin: 20px 0;
+        margin: 0 auto;
       }
-      td,
-      th {
+      th,
+      td {
         border: 1px solid #333;
         width: 40px;
         height: 40px;
@@ -21,74 +79,82 @@
       .board-cell {
         cursor: pointer;
       }
-      body {
-        font-family: Arial, sans-serif;
-        margin: 20px;
+      #userMenu {
+        text-align: right;
       }
-      .section {
-        margin-bottom: 20px;
+      #winnerMessage {
+        font-weight: bold;
+        color: red;
       }
     </style>
   </head>
   <body>
-    <div id="userMenu" class="section">
-      <button id="logoutBtn">Wyloguj się</button>
-    </div>
+    <div class="container">
+      <div class="navbar section">
+        <button id="logoutBtn">Wyloguj się</button>
+        <button onclick="window.location.href='/search'">Wyszukiwanie</button>
+        <button onclick="window.location.href='/profile'">Mój profil</button>
+      </div>
 
-    <h1>Warcaby</h1>
-    <div>
-      <button id="createGameBtn">Nowa gra</button>
-    </div>
-    <div class="section">
-      <label for="gameIdInput">Wybierz grę (ID): </label>
-      <input type="number" id="gameIdInput" min="1" />
-      <button id="loadGameBtn">Wczytaj grę</button>
-    </div>
-    <div id="gameInfo" class="section">
-      <p>Numer gry: <span id="gameId">?</span></p>
-      <p>Aktualny ruch gracza: <span id="currentPlayer">?</span></p>
-      <p>Twórca gry (Player1): <span id="player1">?</span></p>
-      <p>Zaproszony gracz (Player2): <span id="player2">?</span></p>
-      <p id="winnerMessage" style="color: red"></p>
-    </div>
-    <div class="section">
-      <table id="boardTable"></table>
-    </div>
-    <div class="section">
-      <h3>Wykonaj ruch</h3>
-      <form id="moveForm">
-        <label>Od (x, y):</label>
-        <input type="number" id="fromX" min="0" max="7" required />
-        <input type="number" id="fromY" min="0" max="7" required />
-        <br />
-        <label>Do (x, y):</label>
-        <input type="number" id="toX" min="0" max="7" required />
-        <input type="number" id="toY" min="0" max="7" required />
-        <br />
-        <button type="submit">Wykonaj ruch</button>
-      </form>
-    </div>
+      <h1>Warcaby</h1>
 
-    <div class="section">
-      <h3>Zaproś użytkownika do gry</h3>
-      <form id="inviteForm">
-        <label>Identyfikator zapraszanego użytkownika:</label>
-        <input type="number" id="inviteeID" min="1" required />
-        <button type="submit">Wyślij zaproszenie</button>
-      </form>
+      <div class="section" style="text-align: center">
+        <button id="createGameBtn">Nowa gra</button>
+      </div>
+      <div class="section" style="text-align: center">
+        <label for="gameIdInput">Wybierz grę (ID):</label>
+        <input
+          type="number"
+          id="gameIdInput"
+          min="1"
+          style="max-width: 100px; display: inline-block"
+        />
+        <button id="loadGameBtn">Wczytaj grę</button>
+      </div>
+
+      <div id="gameInfo" class="section" style="text-align: center">
+        <p>Numer gry: <span id="gameId">?</span></p>
+        <p>Aktualny ruch gracza: <span id="currentPlayer">?</span></p>
+        <p>Twórca gry (Player1): <span id="player1">?</span></p>
+        <p>Zaproszony gracz (Player2): <span id="player2">?</span></p>
+        <p id="winnerMessage"></p>
+      </div>
+
+      <div class="section">
+        <table id="boardTable"></table>
+      </div>
+
+      <div class="section">
+        <h3>Wykonaj ruch</h3>
+        <form id="moveForm">
+          <label>Od (x, y):</label>
+          <input type="number" id="fromX" min="0" max="7" required />
+          <input type="number" id="fromY" min="0" max="7" required />
+          <label>Do (x, y):</label>
+          <input type="number" id="toX" min="0" max="7" required />
+          <input type="number" id="toY" min="0" max="7" required />
+          <div style="text-align: center; margin-top: 10px">
+            <button type="submit">Wykonaj ruch</button>
+          </div>
+        </form>
+      </div>
+
+      <div class="section">
+        <h3>Zaproś użytkownika do gry</h3>
+        <form id="inviteForm">
+          <label>Identyfikator zapraszanego użytkownika:</label>
+          <input type="number" id="inviteeID" min="1" required />
+          <div style="text-align: center; margin-top: 10px">
+            <button type="submit">Wyślij zaproszenie</button>
+          </div>
+        </form>
+      </div>
     </div>
 
     <script>
-      // $.ajaxSetup({
-      //   headers: {
-      //     "X-User-ID": "1",
-      //   },
-      // });
       $("#logoutBtn").click(function () {
         localStorage.removeItem("userID");
-        $.ajaxSetup({
-          headers: {},
-        });
+        $.ajaxSetup({ headers: {} });
         window.location.href = "/login";
       });
 
@@ -97,9 +163,7 @@
         if (!userID) {
           window.location.href = "/login";
         } else {
-          $.ajaxSetup({
-            headers: { "X-User-ID": userID },
-          });
+          $.ajaxSetup({ headers: { "X-User-ID": userID } });
           fetchGame();
         }
       });
@@ -130,6 +194,7 @@
         } else {
           $("#winnerMessage").text("");
         }
+
         let board = game.Board;
         let tableHtml = "<tr><th></th>";
         for (let col = 0; col < board[0].length; col++) {
@@ -203,12 +268,7 @@
             url: "/games/" + gameId + "/move",
             method: "PUT",
             contentType: "application/json",
-            data: JSON.stringify({
-              fromX: fromX,
-              fromY: fromY,
-              toX: toX,
-              toY: toY,
-            }),
+            data: JSON.stringify({ fromX, fromY, toX, toY }),
             success: function (data) {
               renderBoard(data);
             },
@@ -225,7 +285,7 @@
             url: "/games/" + gameId + "/invite",
             method: "POST",
             contentType: "application/json",
-            data: JSON.stringify({ inviteeID: inviteeID }),
+            data: JSON.stringify({ inviteeID }),
             success: function (data) {
               alert("Użytkownik zaproszony!");
               renderBoard(data);
