@@ -6,6 +6,7 @@ import (
 	"strconv"
 	"sync"
 	"warcaby/game"
+	"warcaby/mqtt"
 
 	"github.com/gin-gonic/gin"
 
@@ -124,6 +125,7 @@ func MoveGame(c *gin.Context) {
 		return
 	}
 
+	mqtt.PublishGameUpdate(g)
 	c.JSON(http.StatusOK, g)
 }
 

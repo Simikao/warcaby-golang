@@ -11,12 +11,14 @@ import (
 	game "warcaby/game"
 	gHandler "warcaby/handlers/game_handler"
 	uHandler "warcaby/handlers/user_handler"
+	mqtt "warcaby/mqtt"
 
 	"github.com/gin-gonic/gin"
 )
 
 func main() {
 	db.InitDB()
+	mqtt.InitMQTT()
 	r := gin.Default()
 
 	authorized := r.Group("/", AuthMiddleware())
