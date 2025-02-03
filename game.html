@@ -1,0 +1,159 @@
+<!doctype html>
+<html lang="pl">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Warcaby - Gra</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <style>
+      table {
+        border-collapse: collapse;
+        margin: 20px 0;
+      }
+      td,
+      th {
+        border: 1px solid #333;
+        width: 40px;
+        height: 40px;
+        text-align: center;
+        vertical-align: middle;
+        font-size: 18px;
+      }
+      .board-cell {
+        cursor: pointer;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Warcaby</h1>
+    <div>
+      <button id="createGameBtn">Nowa gra</button>
+    </div>
+    <div id="gameInfo">
+      <p>Numer gry: <span id="gameId">?</span></p>
+      <p>Aktualny ruch gracza: <span id="currentPlayer">?</span></p>
+      <p id="winnerMessage" style="color: red"></p>
+    </div>
+    <div>
+      <table id="boardTable"></table>
+    </div>
+    <div>
+      <h3>Wykonaj ruch</h3>
+      <form id="moveForm">
+        <label>Od (x, y):</label>
+        <input type="number" id="fromX" min="0" max="7" required />
+        <input type="number" id="fromY" min="0" max="7" required />
+        <br />
+        <label>Do (x, y):</label>
+        <input type="number" id="toX" min="0" max="7" required />
+        <input type="number" id="toY" min="0" max="7" required />
+        <br />
+        <button type="submit">Wykonaj ruch</button>
+      </form>
+    </div>
+
+    <script>
+      let gameId = 1;
+
+      function pieceToSymbol(piece) {
+        switch (piece) {
+          case 1:
+            return "C";
+          case 2:
+            return "B";
+          default:
+            return "";
+        }
+      }
+
+      function renderBoard(game) {
+        $("#gameId").text(game.ID);
+        $("#currentPlayer").text(game.CurrentPlayer === 1 ? "Czarne" : "Białe");
+        if (game.Winner && game.Winner !== 0) {
+          $("#winnerMessage").text(
+            "Koniec gry! Zwyciężyły " +
+              (game.Winner === 1 ? "Czarne" : "Białe"),
+          );
+        } else {
+          $("#winnerMessage").text("");
+        }
+        let board = game.Board;
+        let tableHtml = "<tr><th></th>";
+        for (let col = 0; col < board[0].length; col++) {
+          tableHtml += "<th>" + col + "</th>";
+        }
+        tableHtml += "</tr>";
+
+        for (let i = 0; i < board.length; i++) {
+          tableHtml += "<tr>";
+          tableHtml += "<th>" + i + "</th>";
+          for (let j = 0; j < board[i].length; j++) {
+            let symbol = pieceToSymbol(board[i][j]);
+            tableHtml += "<td class='board-cell'>" + symbol + "</td>";
+          }
+          tableHtml += "</tr>";
+        }
+        $("#boardTable").html(tableHtml);
+      }
+
+      function fetchGame() {
+        $.ajax({
+          url: "/games/" + gameId,
+          method: "GET",
+          success: function (data) {
+            renderBoard(data);
+          },
+          error: function (err) {
+            alert("Błąd pobierania gry: " + err.responseText);
+          },
+        });
+      }
+
+      function createGame() {
+        $.ajax({
+          url: "/games/new",
+          method: "POST",
+          success: function (data) {
+            gameId = data.ID;
+            renderBoard(data);
+          },
+          error: function (err) {
+            alert("Błąd tworzenia gry: " + err.responseText);
+          },
+        });
+      }
+
+      $(document).ready(function () {
+        fetchGame();
+
+        $("#createGameBtn").click(function () {
+          createGame();
+        });
+
+        $("#moveForm").submit(function (e) {
+          e.preventDefault();
+          let fromX = parseInt($("#fromX").val());
+          let fromY = parseInt($("#fromY").val());
+          let toX = parseInt($("#toX").val());
+          let toY = parseInt($("#toY").val());
+          $.ajax({
+            url: "/games/" + gameId + "/move",
+            method: "PUT",
+            contentType: "application/json",
+            data: JSON.stringify({
+              fromX: fromX,
+              fromY: fromY,
+              toX: toX,
+              toY: toY,
+            }),
+            success: function (data) {
+              renderBoard(data);
+            },
+            error: function (err) {
+              alert("Błąd wykonania ruchu: " + err.responseText);
+            },
+          });
+        });
+      });
+    </script>
+  </body>
+</html>

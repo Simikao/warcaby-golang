@@ -112,6 +112,8 @@ func main() {
 	r.PUT("/games/:id/move", moveGame)
 	r.DELETE("/games/:id", deleteGame)
 
+	r.StaticFile("/game", "./game.html")
+
 	r.Run(":8080")
 
 	g := game.NewGame(1)
