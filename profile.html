@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="pl">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Mój profil - Warcaby</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        background-color: #f7f7f7;
+        margin: 0;
+        padding: 20px;
+        color: #333;
+      }
+      .container {
+        max-width: 600px;
+        margin: 0 auto;
+        background-color: #fff;
+        padding: 20px;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      }
+      h1 {
+        text-align: center;
+        margin-bottom: 20px;
+      }
+      .profile-field {
+        margin-bottom: 15px;
+      }
+      .profile-field label {
+        font-weight: bold;
+      }
+      .navbar {
+        text-align: center;
+        margin-bottom: 20px;
+      }
+      .navbar button {
+        margin: 0 10px;
+        padding: 8px 16px;
+        background-color: #007bff;
+        border: none;
+        color: #fff;
+        border-radius: 4px;
+        cursor: pointer;
+      }
+      .navbar button:hover {
+        background-color: #0056b3;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="navbar">
+        <button onclick="window.location.href='/game'">Gra</button>
+        <button onclick="window.location.href='/search'">Wyszukiwanie</button>
+        <button id="logoutBtn">Wyloguj się</button>
+      </div>
+
+      <h1>Mój profil</h1>
+      <div id="profileInfo"></div>
+    </div>
+
+    <script>
+      $(document).ready(function () {
+        const userID = localStorage.getItem("userID");
+        if (!userID) {
+          window.location.href = "/login";
+        } else {
+          $.ajaxSetup({ headers: { "X-User-ID": userID } });
+          fetchProfile();
+        }
+      });
+
+      $("#logoutBtn").click(function () {
+        localStorage.removeItem("userID");
+        $.ajaxSetup({ headers: {} });
+        window.location.href = "/login";
+      });
+
+      function fetchProfile() {
+        $.ajax({
+          url: "/users/me",
+          method: "GET",
+          success: function (data) {
+            displayProfile(data);
+          },
+          error: function (err) {
+            alert("Błąd pobierania profilu: " + err.responseText);
+          },
+        });
+      }
+
+      function displayProfile(user) {
+        const profileHtml = `
+          <div class="profile-field">
+            <label>ID:</label> ${user.ID}
+          </div>
+          <div class="profile-field">
+            <label>Nick:</label> ${user.Nick}
+          </div>
+          <div class="profile-field">
+            <label>Email:</label> ${user.Email}
+          </div>
+          <div class="profile-field">
+            <label>Bio:</label> ${user.Bio ? user.Bio : "Brak"}
+          </div>
+        `;
+        $("#profileInfo").html(profileHtml);
+      }
+    </script>
+  </body>
+</html>
