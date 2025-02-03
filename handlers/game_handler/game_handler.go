@@ -1,7 +1,6 @@
 package game_handler
 
 import (
-	"fmt"
 	"net/http"
 	"strconv"
 	"sync"
@@ -64,7 +63,6 @@ func GetGame(c *gin.Context) {
 	if g.Player1ID != 0 {
 		var user1 db.User
 		if err := db.DB.First(&user1, g.Player1ID).Error; err == nil {
-			fmt.Println(user1.Nick)
 			response["Player1Nick"] = user1.Nick
 		} else {
 			response["Player1Nick"] = nil
