@@ -222,7 +222,14 @@
             renderBoard(data);
           },
           error: function (err) {
-            alert("Błąd pobierania gry: " + err.responseText);
+            if (
+              err.responseText &&
+              err.responseText.indexOf("Gra nie znaleziona") !== -1
+            ) {
+              createGame();
+            } else {
+              alert("Błąd pobierania gry: " + err.responseText);
+            }
           },
         });
       }
