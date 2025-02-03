@@ -100,6 +100,7 @@
 
       <div class="section" style="text-align: center">
         <button id="createGameBtn">Nowa gra</button>
+        <button id="deleteGameBtn">Usuń grę</button>
       </div>
       <div class="section" style="text-align: center">
         <label for="gameIdInput">Wybierz grę (ID):</label>
@@ -248,11 +249,31 @@
         });
       }
 
+      function deleteGame() {
+        $.ajax({
+          url: "/games/" + gameId,
+          method: "DELETE",
+          success: function (data) {
+            alert("Gra została usunięta!");
+            window.location.reload();
+          },
+          error: function (err) {
+            alert("Błąd usuwania gry: " + err.responseText);
+          },
+        });
+      }
+
       $(document).ready(function () {
         fetchGame();
 
         $("#createGameBtn").click(function () {
           createGame();
+        });
+
+        $("#deleteGameBtn").click(function () {
+          if (confirm("Czy na pewno chcesz usunąć grę?")) {
+            deleteGame();
+          }
         });
 
         $("#loadGameBtn").click(function () {
