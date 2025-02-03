@@ -20,13 +20,17 @@ type Game struct {
 	Board         [BoardSize][BoardSize]Piece
 	CurrentPlayer Piece
 	Winner        Piece
+	Player1ID     int
+	Player2ID     int
 }
 
-func NewGame(id int) *Game {
+func NewGame(id int, player1ID int) *Game {
 	game := &Game{
 		ID:            id,
 		CurrentPlayer: White,
 		Winner:        Empty,
+		Player1ID:     player1ID,
+		Player2ID:     0,
 	}
 
 	for i := 0; i < BoardSize; i++ {
@@ -97,7 +101,11 @@ func abs(x int) int {
 	return x
 }
 
-func (g *Game) Move(fromX, fromY, toX, toY int) error {
+func (g *Game) Move(fromX, fromY, toX, toY, userID int) error {
+	if userID != g.Player1ID && userID != g.Player2ID {
+		return errors.New("nie jesteś uprawniony do wykonania ruchu w tej grze")
+	}
+
 	if fromX < 0 || fromX >= BoardSize || fromY < 0 || fromY >= BoardSize ||
 		toX < 0 || toX >= BoardSize || toY < 0 || toY >= BoardSize {
 		return errors.New("współrzędne poza zakresem planszy")

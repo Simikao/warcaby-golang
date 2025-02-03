@@ -21,22 +21,40 @@
       .board-cell {
         cursor: pointer;
       }
+      body {
+        font-family: Arial, sans-serif;
+        margin: 20px;
+      }
+      .section {
+        margin-bottom: 20px;
+      }
     </style>
   </head>
   <body>
+    <div id="userMenu" class="section">
+      <button id="logoutBtn">Wyloguj się</button>
+    </div>
+
     <h1>Warcaby</h1>
     <div>
       <button id="createGameBtn">Nowa gra</button>
     </div>
-    <div id="gameInfo">
+    <div class="section">
+      <label for="gameIdInput">Wybierz grę (ID): </label>
+      <input type="number" id="gameIdInput" min="1" />
+      <button id="loadGameBtn">Wczytaj grę</button>
+    </div>
+    <div id="gameInfo" class="section">
       <p>Numer gry: <span id="gameId">?</span></p>
       <p>Aktualny ruch gracza: <span id="currentPlayer">?</span></p>
+      <p>Twórca gry (Player1): <span id="player1">?</span></p>
+      <p>Zaproszony gracz (Player2): <span id="player2">?</span></p>
       <p id="winnerMessage" style="color: red"></p>
     </div>
-    <div>
+    <div class="section">
       <table id="boardTable"></table>
     </div>
-    <div>
+    <div class="section">
       <h3>Wykonaj ruch</h3>
       <form id="moveForm">
         <label>Od (x, y):</label>
@@ -51,7 +69,41 @@
       </form>
     </div>
 
+    <div class="section">
+      <h3>Zaproś użytkownika do gry</h3>
+      <form id="inviteForm">
+        <label>Identyfikator zapraszanego użytkownika:</label>
+        <input type="number" id="inviteeID" min="1" required />
+        <button type="submit">Wyślij zaproszenie</button>
+      </form>
+    </div>
+
     <script>
+      // $.ajaxSetup({
+      //   headers: {
+      //     "X-User-ID": "1",
+      //   },
+      // });
+      $("#logoutBtn").click(function () {
+        localStorage.removeItem("userID");
+        $.ajaxSetup({
+          headers: {},
+        });
+        window.location.href = "/login.html";
+      });
+
+      $(document).ready(function () {
+        const userID = localStorage.getItem("userID");
+        if (!userID) {
+          window.location.href = "/login";
+        } else {
+          $.ajaxSetup({
+            headers: { "X-User-ID": userID },
+          });
+          fetchGame();
+        }
+      });
+
       let gameId = 1;
 
       function pieceToSymbol(piece) {
@@ -68,6 +120,8 @@
       function renderBoard(game) {
         $("#gameId").text(game.ID);
         $("#currentPlayer").text(game.CurrentPlayer === 1 ? "Czarne" : "Białe");
+        $("#player1").text(game.Player1Nick ? game.Player1Nick : "?");
+        $("#player2").text(game.Player2Nick ? game.Player2Nick : "Brak");
         if (game.Winner && game.Winner !== 0) {
           $("#winnerMessage").text(
             "Koniec gry! Zwyciężyły " +
@@ -129,6 +183,16 @@
           createGame();
         });
 
+        $("#loadGameBtn").click(function () {
+          let id = parseInt($("#gameIdInput").val());
+          if (id > 0) {
+            gameId = id;
+            fetchGame();
+          } else {
+            alert("Podaj prawidłowe ID gry.");
+          }
+        });
+
         $("#moveForm").submit(function (e) {
           e.preventDefault();
           let fromX = parseInt($("#fromX").val());
@@ -150,6 +214,24 @@
             },
             error: function (err) {
               alert("Błąd wykonania ruchu: " + err.responseText);
+            },
+          });
+        });
+
+        $("#inviteForm").submit(function (e) {
+          e.preventDefault();
+          let inviteeID = parseInt($("#inviteeID").val());
+          $.ajax({
+            url: "/games/" + gameId + "/invite",
+            method: "POST",
+            contentType: "application/json",
+            data: JSON.stringify({ inviteeID: inviteeID }),
+            success: function (data) {
+              alert("Użytkownik zaproszony!");
+              renderBoard(data);
+            },
+            error: function (err) {
+              alert("Błąd zapraszania: " + err.responseText);
             },
           });
         });

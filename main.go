@@ -19,19 +19,25 @@ func main() {
 	db.InitDB()
 	r := gin.Default()
 
-	r.POST("/games/new", gHandler.CreateGame)
+	authorized := r.Group("/", AuthMiddleware())
+	{
+		authorized.POST("/games/new", gHandler.CreateGame)
+		authorized.POST("/games/:id/invite", gHandler.InviteUser)
+		authorized.PUT("/games/:id/move", gHandler.MoveGame)
+		authorized.DELETE("/games/:id", gHandler.DeleteGame)
+	}
+
 	r.GET("/games/:id", gHandler.GetGame)
-	r.PUT("/games/:id/move", gHandler.MoveGame)
-	r.DELETE("/games/:id", gHandler.DeleteGame)
 
 	r.POST("/register", uHandler.RegisterUser)
 	r.POST("/login", uHandler.Login)
 
 	r.StaticFile("/game", "./game.html")
+	r.StaticFile("/login", "./login.html")
 
 	r.Run(":8080")
 
-	g := game.NewGame(1)
+	g := game.NewGame(1, 1)
 	scanner := bufio.NewScanner(os.Stdin)
 
 	for {
@@ -64,7 +70,7 @@ func main() {
 			continue
 		}
 
-		err := g.Move(fromX, fromY, toX, toY)
+		err := g.Move(fromX, fromY, toX, toY, 1)
 		if err != nil {
 			fmt.Println("Błąd:", err)
 		}

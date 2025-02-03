@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="pl">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Logowanie - Warcaby</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        margin: 20px;
+      }
+      form {
+        max-width: 300px;
+        margin: 0 auto;
+      }
+      input {
+        display: block;
+        margin-bottom: 10px;
+        width: 100%;
+        padding: 8px;
+      }
+      button {
+        padding: 8px 16px;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Logowanie</h1>
+    <form id="loginForm">
+      <input type="email" id="email" placeholder="Email" required />
+      <input type="password" id="password" placeholder="Hasło" required />
+      <button type="submit">Zaloguj się</button>
+    </form>
+
+    <script>
+      $("#loginForm").submit(function (e) {
+        e.preventDefault();
+        const email = $("#email").val();
+        const password = $("#password").val();
+
+        $.ajax({
+          url: "/login",
+          method: "POST",
+          contentType: "application/json",
+          data: JSON.stringify({ email: email, password: password }),
+          success: function (response) {
+            const userID = response.user.ID;
+            localStorage.setItem("userID", userID);
+
+            $.ajaxSetup({
+              headers: { "X-User-ID": userID },
+            });
+
+            window.location.href = "/game";
+          },
+          error: function (err) {
+            alert("Błąd logowania: " + err.responseText);
+          },
+        });
+      });
+    </script>
+  </body>
+</html>
