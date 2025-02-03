@@ -126,6 +126,9 @@ func MoveGame(c *gin.Context) {
 	}
 
 	mqtt.PublishGameUpdate(g)
+	if g.Winner != 0 {
+		mqtt.PublishGameWin(g.ID, int(g.Winner))
+	}
 	c.JSON(http.StatusOK, g)
 }
 

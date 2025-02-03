@@ -31,3 +31,36 @@ func PublishGameUpdate(g *game.Game) {
 	token := mqttClient.Publish(topic, 0, false, payload)
 	token.Wait()
 }
+
+func PublishGameWin(gameID int, winnerPiece int) {
+	topic := fmt.Sprintf("warcaby/game/%d/win", gameID)
+	winner := ""
+	switch winnerPiece {
+	case 1:
+		winner = "Czarne"
+	case 2:
+		winner = "Białe"
+	default:
+		winner = "Coś poszło nie tak, nie wiem kto wygrał"
+	}
+
+	payloadData := map[string]interface{}{
+		"gameID":  gameID,
+		"winner":  winner,
+		"message": fmt.Sprintf("Grę wygrywa %s", winner),
+	}
+
+	payload, err := json.Marshal(payloadData)
+	if err != nil {
+		log.Println("Błąd serializacji payloadu o wygranej:", err)
+		return
+	}
+
+	token := mqttClient.Publish(topic, 0, false, payload)
+	token.Wait()
+	if token.Error() != nil {
+		log.Println("Błąd publikacji powiadomienia o wygranej:", token.Error())
+	} else {
+		log.Printf("Opublikowano powiadomienie o wygranej na temacie %s: %s\n", topic, payload)
+	}
+}
