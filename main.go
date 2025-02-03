@@ -3,6 +3,7 @@ package main
 import (
 	"bufio"
 	"fmt"
+	"log"
 	"os"
 	"strconv"
 	"strings"
@@ -44,7 +45,9 @@ func main() {
 	r.StaticFile("/game", "./game.html")
 	r.StaticFile("/login", "./login.html")
 
-	r.Run(":8080")
+	if err := r.Run(":8080"); err != nil {
+		log.Fatal(err)
+	}
 
 	g := game.NewGame(1, 1)
 	scanner := bufio.NewScanner(os.Stdin)
