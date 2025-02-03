@@ -9,7 +9,7 @@ import (
 	"strings"
 	"sync"
 
-	game "warcaby/warcaby"
+	game "warcaby/game"
 
 	"github.com/gin-gonic/gin"
 )
