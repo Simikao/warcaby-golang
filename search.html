@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="pl">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Wyszukiwanie użytkowników - Warcaby</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        margin: 20px;
+      }
+      #searchContainer {
+        max-width: 400px;
+        margin: 0 auto;
+      }
+      input[type="text"] {
+        width: 80%;
+        padding: 8px;
+        margin-right: 5px;
+      }
+      button {
+        padding: 8px 12px;
+      }
+      #results {
+        margin-top: 20px;
+      }
+      .user {
+        border-bottom: 1px solid #ccc;
+        padding: 5px 0;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Wyszukiwanie użytkowników</h1>
+    <div id="searchContainer">
+      <input
+        type="text"
+        id="searchInput"
+        placeholder="Wpisz fragment nicka..."
+      />
+      <button id="searchBtn">Szukaj</button>
+    </div>
+    <div id="results"></div>
+
+    <script>
+      $("#searchBtn").click(function () {
+        const query = $("#searchInput").val().trim();
+        if (query === "") {
+          alert("Wprowadź frazę do wyszukania.");
+          return;
+        }
+        $.ajax({
+          url: "/users",
+          method: "GET",
+          data: { search: query },
+          success: function (data) {
+            displayResults(data);
+          },
+          error: function (err) {
+            alert("Błąd wyszukiwania: " + err.responseText);
+          },
+        });
+      });
+
+      function displayResults(users) {
+        const $results = $("#results");
+        $results.empty();
+        if (users.length === 0) {
+          $results.append("<p>Nie znaleziono użytkowników.</p>");
+          return;
+        }
+        users.forEach(function (user) {
+          const userHtml = `<div class="user">
+                              <strong>ID:</strong> ${user.ID} <br>
+                              <strong>Nick:</strong> ${user.Nick} <br>
+                              <strong>Bio:</strong> ${user.Bio ? user.Bio : "Brak"} 
+                            </div>`;
+          $results.append(userHtml);
+        });
+      }
+    </script>
+  </body>
+</html>
