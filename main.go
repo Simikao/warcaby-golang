@@ -53,7 +53,7 @@ func main() {
 	r.StaticFile("/game", "./game.html")
 	r.StaticFile("/login", "./login.html")
 
-	if err := r.Run(":8080"); err != nil {
+	if err := r.RunTLS(":8080", "./cert/cert.pem", "./cert/key.pem"); err != nil {
 		log.Fatal(err)
 	}
 
