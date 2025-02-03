@@ -3,6 +3,7 @@ package main
 import (
 	"bufio"
 	"fmt"
+	"io"
 	"log"
 	"os"
 	"strconv"
@@ -18,6 +19,13 @@ import (
 )
 
 func main() {
+	debug := os.Getenv("LOGFILE")
+	if debug != "" {
+		f, _ := os.Create(debug + ".log")
+		defer f.Close()
+		gin.DefaultWriter = io.MultiWriter(f)
+	}
+
 	db.InitDB()
 	mqtt.InitMQTT()
 	r := gin.Default()
