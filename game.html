@@ -336,6 +336,7 @@
         $("#inviteForm").submit(function (e) {
           e.preventDefault();
           let inviteeID = parseInt($("#inviteeID").val());
+          console.log(inviteeID);
           $.ajax({
             url: "/games/" + gameId + "/invite",
             method: "POST",
@@ -351,6 +352,24 @@
           });
         });
       });
+      var ws = new WebSocket("ws://localhost:8080/ws/games/" + gameId);
+      ws.onopen = function () {
+        console.log("WebSocket połączony");
+      };
+      ws.onmessage = function (event) {
+        try {
+          var newGameState = JSON.parse(event.data);
+          renderBoard(newGameState);
+        } catch (e) {
+          console.error("Błąd parsowania wiadomości:", e);
+        }
+      };
+      ws.onerror = function (error) {
+        console.error("Błąd WebSocket:", error);
+      };
+      ws.onclose = function () {
+        console.log("WebSocket zamknięty");
+      };
     </script>
   </body>
 </html>

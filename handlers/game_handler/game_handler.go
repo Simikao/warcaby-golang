@@ -10,6 +10,7 @@ import (
 	"github.com/gin-gonic/gin"
 
 	db "warcaby/database"
+	ws "warcaby/webSocket"
 )
 
 var (
@@ -123,6 +124,7 @@ func MoveGame(c *gin.Context) {
 		return
 	}
 
+	ws.BroadcastGameUpdate(g)
 	mqtt.PublishGameUpdate(g)
 	if g.Winner != 0 {
 		mqtt.PublishGameWin(g.ID, int(g.Winner))

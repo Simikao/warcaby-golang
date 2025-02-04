@@ -14,6 +14,7 @@ import (
 	gHandler "warcaby/handlers/game_handler"
 	uHandler "warcaby/handlers/user_handler"
 	mqtt "warcaby/mqtt"
+	ws "warcaby/webSocket"
 
 	"github.com/gin-gonic/gin"
 )
@@ -41,6 +42,7 @@ func main() {
 		authorized.PUT("/users/:id", uHandler.UpdateUser)
 		authorized.DELETE("/users/:id", uHandler.DeleteUser)
 	}
+	r.GET("/ws/games/:id", ws.WsGameHandler)
 
 	r.GET("/games/:id", gHandler.GetGame)
 	r.GET("/games/list", gHandler.GetGames)
@@ -56,7 +58,11 @@ func main() {
 	r.StaticFile("/search", "./search.html")
 	r.StaticFile("/profile", "./profile.html")
 
-	if err := r.RunTLS(":8080", "./cert/cert.pem", "./cert/key.pem"); err != nil {
+	// if err := r.RunTLS(":8080", "./cert/cert.pem", "./cert/key.pem"); err != nil {
+	// 	log.Fatal(err)
+	// }
+
+	if err := r.Run(":8080"); err != nil {
 		log.Fatal(err)
 	}
 
