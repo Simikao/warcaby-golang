@@ -168,6 +168,9 @@
         if (games == null) {
           $dropdown.append("<option value=''>Brak dostępnych gier</option>");
         } else {
+          games.sort(function (a, b) {
+            return a.ID - b.ID;
+          });
           games.forEach(function (game) {
             const optionText = "Gra " + game.ID;
             $dropdown.append(
