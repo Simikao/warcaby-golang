@@ -123,7 +123,6 @@ func MoveGame(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-
 	ws.BroadcastGameUpdate(g)
 	mqtt.PublishGameUpdate(g)
 	if g.Winner != 0 {
@@ -193,7 +192,7 @@ func InviteUser(c *gin.Context) {
 	}
 
 	g.Player2ID = payload.InviteeID
-
+	ws.BroadcastInvite(g, payload.InviteeID)
 	c.JSON(http.StatusOK, g)
 }
 

@@ -89,3 +89,30 @@ func BroadcastGameUpdate(g *game.Game) {
 		}
 	}
 }
+
+func BroadcastInvite(g *game.Game, invitee int) {
+	msg := map[string]interface{}{
+		"type":    "invite",
+		"gameID":  g.ID,
+		"inviter": g.Player1ID,
+		"invitee": g.Player2ID,
+		"message": fmt.Sprintf("Zostałeś zaproszony do gry %d przez %d", g.ID, int(g.Player1ID)),
+	}
+
+	clientsMu.Lock()
+	conns, exists := clients[g.ID]
+	clientsMu.Unlock()
+	if !exists {
+		log.Println("Brak połączeń dla gry", g.ID)
+		return
+	}
+	for conn := range conns {
+		if err := conn.WriteJSON(msg); err != nil {
+			log.Println("Błąd wysyłania zaproszenia przez WebSocket:", err)
+			conn.Close()
+			clientsMu.Lock()
+			delete(conns, conn)
+			clientsMu.Unlock()
+		}
+	}
+}

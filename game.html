@@ -357,11 +357,29 @@
         console.log("WebSocket połączony");
       };
       ws.onmessage = function (event) {
+        let message;
         try {
-          var newGameState = JSON.parse(event.data);
-          renderBoard(newGameState);
+          message = JSON.parse(event.data);
         } catch (e) {
-          console.error("Błąd parsowania wiadomości:", e);
+          console.warn(
+            "Odebrane dane nie są JSON-em, używam ich jako tekst:",
+            event.data,
+          );
+          message = event.data;
+        }
+
+        if (typeof message === "object" && message.type) {
+          if (message.type === "invite") {
+            alert(message.message);
+          } else if (message.type === "move") {
+            renderBoard(message.data);
+          } else if (message.type === "end") {
+            alert("Gra zakończona: " + message.message);
+          } else {
+            console.log("Nieznany typ wiadomości:", message);
+          }
+        } else {
+          console.log("Otrzymano:", message);
         }
       };
       ws.onerror = function (error) {
