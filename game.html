@@ -103,13 +103,8 @@
         <button id="deleteGameBtn">Usuń grę</button>
       </div>
       <div class="section" style="text-align: center">
-        <label for="gameIdInput">Wybierz grę (ID):</label>
-        <input
-          type="number"
-          id="gameIdInput"
-          min="1"
-          style="max-width: 100px; display: inline-block"
-        />
+        <label for="gameDropdown">Wybierz grę:</label>
+        <select id="gameDropdown" style="width: 120px"></select>
         <button id="loadGameBtn">Wczytaj grę</button>
       </div>
 
@@ -153,6 +148,35 @@
     </div>
 
     <script>
+      function fetchGameList() {
+        $.ajax({
+          url: "/games/list",
+          method: "GET",
+          success: function (data) {
+            console.log("Lista", data);
+            populateGameDropdown(data);
+          },
+          error: function (err) {
+            alert("Błąd pobierania listy gier: " + err.responseText);
+          },
+        });
+      }
+
+      function populateGameDropdown(games) {
+        const $dropdown = $("#gameDropdown");
+        $dropdown.empty();
+        if (games == null) {
+          $dropdown.append("<option value=''>Brak dostępnych gier</option>");
+        } else {
+          games.forEach(function (game) {
+            const optionText = "Gra " + game.ID;
+            $dropdown.append(
+              "<option value='" + game.ID + "'>" + optionText + "</option>",
+            );
+          });
+        }
+      }
+
       $("#logoutBtn").click(function () {
         localStorage.removeItem("userID");
         $.ajaxSetup({ headers: {} });
@@ -165,6 +189,7 @@
           window.location.href = "/login";
         } else {
           $.ajaxSetup({ headers: { "X-User-ID": userID } });
+          fetchGameList();
           fetchGame();
         }
       });
@@ -277,9 +302,9 @@
         });
 
         $("#loadGameBtn").click(function () {
-          let id = parseInt($("#gameIdInput").val());
-          if (id > 0) {
-            gameId = id;
+          let id = parseInt($("#gameDropdown").val());
+          if (id) {
+            gameId = parseInt(id);
             fetchGame();
           } else {
             alert("Podaj prawidłowe ID gry.");

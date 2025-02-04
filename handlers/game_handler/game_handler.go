@@ -194,3 +194,16 @@ func InviteUser(c *gin.Context) {
 
 	c.JSON(http.StatusOK, g)
 }
+
+func GetGames(c *gin.Context) {
+	gamesMu.Lock()
+	defer gamesMu.Unlock()
+
+	var gameList []gin.H
+	for _, g := range games {
+		gameList = append(gameList, gin.H{
+			"ID": g.ID,
+		})
+	}
+	c.JSON(http.StatusOK, gameList)
+}

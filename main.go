@@ -43,6 +43,7 @@ func main() {
 	}
 
 	r.GET("/games/:id", gHandler.GetGame)
+	r.GET("/games/list", gHandler.GetGames)
 
 	r.GET("/users/:id", uHandler.GetUser)
 	r.GET("/users", uHandler.SearchUsers)
