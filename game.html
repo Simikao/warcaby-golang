@@ -153,7 +153,6 @@
           url: "/games/list",
           method: "GET",
           success: function (data) {
-            console.log("Lista", data);
             populateGameDropdown(data);
           },
           error: function (err) {
